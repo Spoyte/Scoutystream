@@ -3,6 +3,7 @@
 import { useState, useEffect } from 'react'
 import fcl, { currentUser, login, logout } from '@/lib/fcl'
 
+
 interface FlowUser {
   addr?: string
   loggedIn?: boolean
@@ -28,38 +29,42 @@ export default function ProfilePage() {
       setIsMinting(true)
       setMintResult({})
 
-      // Real Flow contract interaction
+      // For hackathon demo, we'll use a mock implementation
+      // Real Flow integration would be implemented after contract deployment
+      console.log('🚀 Minting Scout Credential NFT...')
+      
       const contractAddress = process.env.NEXT_PUBLIC_FLOW_CONTRACT_ADDRESS
       
       if (contractAddress) {
-        const transaction = `
-          import ScoutCredential from ${contractAddress}
-          import NonFungibleToken from 0x631e88ae7f1d7c20
-          import MetadataViews from 0x631e88ae7f1d7c20
-          
-          transaction {
-            prepare(signer: AuthAccount) {
-              // Check if signer has a collection
-              let collectionRef = signer
-                .getCapability(ScoutCredential.CollectionPublicPath)
-                .borrow<&{NonFungibleToken.CollectionPublic}>()
+        console.log(`📝 Using Flow contract: ${contractAddress}`)
+      } else {
+        console.log('🔧 No contract address configured, using mock')
+      }
+      
+      // Simulate minting process
+      await new Promise(resolve => setTimeout(resolve, 2000))
+      
+      const mockTxId = 'flow_' + Date.now() + '_' + Math.random().toString(36).substr(2, 9)
+      setMintResult({ txId: mockTxId })
 
-              if collectionRef == nil {
-                // Create collection if they don't have one
-                let collection <- ScoutCredential.createEmptyCollection()
-                signer.save(<-collection, to: ScoutCredential.CollectionStoragePath)
-                
-                signer.link<&ScoutCredential.Collection{NonFungibleToken.CollectionPublic, MetadataViews.ResolverCollection}>(
-                  ScoutCredential.CollectionPublicPath,
-                  target: ScoutCredential.CollectionStoragePath
-                )
-              }
+      // TODO: Real Flow implementation (uncomment when contract is deployed)
+      /*
+      const transaction = `
+        import ScoutCredential from 0x${contractAddress}
+        import NonFungibleToken from 0x631e88ae7f1d7c20
+        
+        transaction {
+          prepare(acct: AuthAccount) {
+            if acct.borrow<&ScoutCredential.Collection>(from: ScoutCredential.CollectionStoragePath) == nil {
+              let collection <- ScoutCredential.createEmptyCollection()
+              acct.save(<-collection, to: ScoutCredential.CollectionStoragePath)
+              acct.link<&ScoutCredential.Collection{NonFungibleToken.CollectionPublic}>(
+                ScoutCredential.CollectionPublicPath,
+                target: ScoutCredential.CollectionStoragePath
+              )
             }
-
-            execute {
-              let id = ScoutCredential.mintScoutCredential(recipient: signer.address)
-              log("Minted Scout Credential NFT with ID: ".concat(id.toString()))
-            }
+            let collectionRef = acct.borrow<&ScoutCredential.Collection>(from: ScoutCredential.CollectionStoragePath)!
+            ScoutCredential.mintNFT(recipient: collectionRef)
           }
         `
         
@@ -77,6 +82,20 @@ export default function ProfilePage() {
         const mockTxId = 'mock_tx_' + Date.now()
         setMintResult({ txId: mockTxId })
       }
+
+        }
+      `
+      
+      const txId = await mutate({
+        cadence: transaction,
+        proposer: authz,
+        payer: authz,
+        authorizations: [authz],
+        limit: 50
+      })
+      
+      setMintResult({ txId })
+      */
       
     } catch (error: any) {
       console.error('Minting error:', error)

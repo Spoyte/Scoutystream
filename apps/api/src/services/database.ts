@@ -45,6 +45,7 @@ class DatabaseService {
         tags: ["youth", "ball-control", "training", "fundamentals"],
         sport: "football",
         team: "Barcelona Youth Academy",
+        thumbnail: "https://images.unsplash.com/photo-1571019613454-1cb2f99b2d8b?w=400&h=225&fit=crop&crop=center",
         status: "ready",
         createdAt: Date.now() - 86400000, // 1 day ago
         updatedAt: Date.now() - 86400000,
@@ -57,6 +58,7 @@ class DatabaseService {
         tags: ["professional", "tactics", "scrimmage", "analysis"],
         sport: "football",
         team: "Manchester United",
+        thumbnail: "https://images.unsplash.com/photo-1553778263-73a3ebf2b0dd?w=400&h=225&fit=crop&crop=center",
         status: "ready",
         createdAt: Date.now() - 172800000, // 2 days ago
         updatedAt: Date.now() - 172800000,
@@ -70,6 +72,7 @@ class DatabaseService {
         sport: "football",
         player: "Marcus Rashford",
         team: "Manchester United",
+        thumbnail: "https://images.unsplash.com/photo-1571019613454-1cb2f99b2d8b?w=400&h=225&fit=crop&crop=center",
         status: "ready",
         createdAt: Date.now() - 259200000, // 3 days ago
         updatedAt: Date.now() - 259200000,
@@ -83,6 +86,7 @@ class DatabaseService {
         sport: "basketball",
         team: "Los Angeles Lakers",
         player: "LeBron James",
+        thumbnail: "https://images.unsplash.com/photo-1546519638-68e109498ffc?w=400&h=225&fit=crop&crop=center",
         status: "ready",
         createdAt: Date.now() - 345600000, // 4 days ago
         updatedAt: Date.now() - 345600000,
@@ -95,6 +99,7 @@ class DatabaseService {
         tags: ["serve", "technique", "professional", "masterclass"],
         sport: "tennis",
         player: "Novak Djokovic",
+        thumbnail: "https://images.unsplash.com/photo-1554068865-24cecd4e34b8?w=400&h=225&fit=crop&crop=center",
         status: "ready",
         createdAt: Date.now() - 432000000, // 5 days ago
         updatedAt: Date.now() - 432000000,
@@ -107,6 +112,7 @@ class DatabaseService {
         tags: ["defense", "tactics", "premier-league", "professional"],
         sport: "football",
         team: "Liverpool FC",
+        thumbnail: "https://images.unsplash.com/photo-1571019613454-1cb2f99b2d8b?w=400&h=225&fit=crop&crop=center",
         status: "ready",
         createdAt: Date.now() - 518400000, // 6 days ago
         updatedAt: Date.now() - 518400000,
@@ -119,6 +125,7 @@ class DatabaseService {
         tags: ["offense", "fast-break", "transition", "strategy"],
         sport: "basketball",
         team: "Golden State Warriors",
+        thumbnail: "https://images.unsplash.com/photo-1546519638-68e109498ffc?w=400&h=225&fit=crop&crop=center",
         status: "ready",
         createdAt: Date.now() - 604800000, // 7 days ago
         updatedAt: Date.now() - 604800000,
@@ -131,9 +138,117 @@ class DatabaseService {
         tags: ["backhand", "clay-court", "technique", "advanced"],
         sport: "tennis",
         player: "Rafael Nadal",
+        thumbnail: "https://images.unsplash.com/photo-1554068865-24cecd4e34b8?w=400&h=225&fit=crop&crop=center",
         status: "ready",
         createdAt: Date.now() - 691200000, // 8 days ago
         updatedAt: Date.now() - 691200000,
+      },
+      {
+        title: "Soccer Goalkeeper Training - Shot Stopping",
+        description: "Advanced goalkeeper techniques for shot stopping and positioning.",
+        duration: 3300, // 55 minutes
+        price: 10.99,
+        tags: ["goalkeeper", "shot-stopping", "positioning", "training"],
+        sport: "football",
+        team: "Real Madrid",
+        player: "Thibaut Courtois",
+        thumbnail: "https://images.unsplash.com/photo-1571019613454-1cb2f99b2d8b?w=400&h=225&fit=crop&crop=center",
+        status: "ready",
+        createdAt: Date.now() - 777600000, // 9 days ago
+        updatedAt: Date.now() - 777600000,
+      },
+      {
+        title: "Basketball Post Play Fundamentals",
+        description: "Essential post play techniques for centers and power forwards.",
+        duration: 2700, // 45 minutes
+        price: 8.99,
+        tags: ["post-play", "fundamentals", "centers", "power-forwards"],
+        sport: "basketball",
+        team: "Boston Celtics",
+        thumbnail: "https://images.unsplash.com/photo-1546519638-68e109498ffc?w=400&h=225&fit=crop&crop=center",
+        status: "ready",
+        createdAt: Date.now() - 864000000, // 10 days ago
+        updatedAt: Date.now() - 864000000,
+      },
+      {
+        title: "Tennis Volley Techniques - Net Play",
+        description: "Master the art of net play with professional volley techniques.",
+        duration: 1800, // 30 minutes
+        price: 7.99,
+        tags: ["volley", "net-play", "technique", "doubles"],
+        sport: "tennis",
+        player: "Roger Federer",
+        thumbnail: "https://images.unsplash.com/photo-1554068865-24cecd4e34b8?w=400&h=225&fit=crop&crop=center",
+        status: "ready",
+        createdAt: Date.now() - 950400000, // 11 days ago
+        updatedAt: Date.now() - 950400000,
+      },
+      {
+        title: "Football Set Piece Mastery",
+        description: "Free kicks, corners, and penalty techniques from top professionals.",
+        duration: 3900, // 65 minutes
+        price: 13.99,
+        tags: ["set-pieces", "free-kicks", "corners", "penalties"],
+        sport: "football",
+        team: "Paris Saint-Germain",
+        player: "Lionel Messi",
+        thumbnail: "https://images.unsplash.com/photo-1571019613454-1cb2f99b2d8b?w=400&h=225&fit=crop&crop=center",
+        status: "ready",
+        createdAt: Date.now() - 1036800000, // 12 days ago
+        updatedAt: Date.now() - 1036800000,
+      },
+      {
+        title: "Basketball Defensive Footwork",
+        description: "Essential defensive movements and positioning for all positions.",
+        duration: 2400, // 40 minutes
+        price: 6.99,
+        tags: ["defense", "footwork", "positioning", "fundamentals"],
+        sport: "basketball",
+        team: "Miami Heat",
+        thumbnail: "https://images.unsplash.com/photo-1546519638-68e109498ffc?w=400&h=225&fit=crop&crop=center",
+        status: "ready",
+        createdAt: Date.now() - 1123200000, // 13 days ago
+        updatedAt: Date.now() - 1123200000,
+      },
+      {
+        title: "Tennis Mental Game & Strategy",
+        description: "Psychological aspects and strategic thinking in tennis matches.",
+        duration: 4200, // 70 minutes
+        price: 14.99,
+        tags: ["mental-game", "strategy", "psychology", "match-play"],
+        sport: "tennis",
+        player: "Serena Williams",
+        thumbnail: "https://images.unsplash.com/photo-1554068865-24cecd4e34b8?w=400&h=225&fit=crop&crop=center",
+        status: "ready",
+        createdAt: Date.now() - 1209600000, // 14 days ago
+        updatedAt: Date.now() - 1209600000,
+      },
+      {
+        title: "Football Speed & Agility Training",
+        description: "Professional speed and agility drills for football players.",
+        duration: 2100, // 35 minutes
+        price: 9.99,
+        tags: ["speed", "agility", "conditioning", "professional"],
+        sport: "football",
+        team: "Bayern Munich",
+        thumbnail: "https://images.unsplash.com/photo-1571019613454-1cb2f99b2d8b?w=400&h=225&fit=crop&crop=center",
+        status: "ready",
+        createdAt: Date.now() - 1296000000, // 15 days ago
+        updatedAt: Date.now() - 1296000000,
+      },
+      {
+        title: "Basketball Ball Handling Mastery",
+        description: "Advanced ball handling techniques for guards and point guards.",
+        duration: 3000, // 50 minutes
+        price: 11.99,
+        tags: ["ball-handling", "dribbling", "guards", "advanced"],
+        sport: "basketball",
+        team: "Brooklyn Nets",
+        player: "Kyrie Irving",
+        thumbnail: "https://images.unsplash.com/photo-1546519638-68e109498ffc?w=400&h=225&fit=crop&crop=center",
+        status: "ready",
+        createdAt: Date.now() - 1382400000, // 16 days ago
+        updatedAt: Date.now() - 1382400000,
       }
     ]
 
