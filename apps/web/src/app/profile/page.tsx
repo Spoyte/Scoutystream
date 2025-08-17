@@ -1,8 +1,7 @@
 'use client'
 
 import { useState, useEffect } from 'react'
-import { currentUser } from '@/lib/fcl'
-import * as fcl from '@/lib/fcl'
+import fcl, { currentUser, login, logout } from '@/lib/fcl'
 
 interface FlowUser {
   addr?: string
@@ -64,11 +63,11 @@ export default function ProfilePage() {
           }
         `
         
-        const txId = await fcl.mutate({
+        const txId = await (fcl as any).mutate({
           cadence: transaction,
-          proposer: fcl.authz,
-          payer: fcl.authz,
-          authorizations: [fcl.authz],
+          proposer: (fcl as any).authz,
+          payer: (fcl as any).authz,
+          authorizations: [(fcl as any).authz],
           limit: 50
         })
         
@@ -109,7 +108,7 @@ export default function ProfilePage() {
                     <p className="font-mono text-sm text-green-700">{user.addr}</p>
                   </div>
                   <button
-                    onClick={fcl.logout}
+                    onClick={logout}
                     className="bg-red-500 hover:bg-red-600 text-white px-4 py-2 rounded-md text-sm"
                   >
                     Disconnect
@@ -122,7 +121,7 @@ export default function ProfilePage() {
                   Connect your Flow wallet to mint Scout Credentials
                 </p>
                 <button
-                  onClick={fcl.login}
+                  onClick={login}
                   className="bg-green-500 hover:bg-green-600 text-white px-4 py-2 rounded-md"
                 >
                   Connect Flow Wallet
