@@ -14,5 +14,8 @@ fcl.config({
 export const login = fcl.authenticate
 export const logout = fcl.unauthenticate
 export const currentUser = fcl.currentUser
+export const authz = fcl.authz
+export const mutate = fcl.mutate
+export const query = fcl.query
 
 export default fcl
