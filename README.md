@@ -84,6 +84,7 @@ pnpm --filter web build
 ✅ **Completed**:
 - Frontend application with all pages and components
 - Backend API with video access control
+- Advanced video filtering (sport, team, player, search)
 - Wallet integration (EVM + Flow)
 - Video gallery and playback UI
 - Agent demo interface
