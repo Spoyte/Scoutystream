@@ -3,6 +3,7 @@
 import { useParams } from 'next/navigation'
 import { useState, useEffect } from 'react'
 import { HlsPlayer } from '@/components/HlsPlayer'
+import { YouTubePlayer } from '@/components/YouTubePlayer'
 import { useVideo, useVideoManifest } from '@/hooks/useApi'
 import { useX402 } from '@/hooks/useX402'
 import { useAccount } from 'wagmi'
@@ -70,11 +71,15 @@ export default function VideoPage() {
       <div className="bg-white rounded-lg shadow-lg overflow-hidden">
         <div className="aspect-video bg-gray-900">
           {manifestUrl ? (
-            <HlsPlayer
-              manifestUrl={manifestUrl}
-              poster={video.thumbnail}
-              className="rounded-t-lg"
-            />
+            manifestUrl.includes('youtube.com') ? (
+              <YouTubePlayer embedUrl={manifestUrl} className="rounded-t-lg" />
+            ) : (
+              <HlsPlayer
+                manifestUrl={manifestUrl}
+                poster={video.thumbnail}
+                className="rounded-t-lg"
+              />
+            )
           ) : (
             <div className="flex items-center justify-center h-full">
               {video.hasAccess ? (

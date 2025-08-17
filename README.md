@@ -7,7 +7,7 @@ A decentralized application (dApp) for the professional sports industry that pro
 - **Frontend**: Next.js with React, TypeScript, Tailwind CSS
 - **Blockchain**: Chiliz Spicy Testnet (core access control) + Flow Testnet (scout credentials)
 - **Payments**: Coinbase x402 protocol with mock fallback
-- **Storage**: S3-compatible storage with HLS streaming
+- **Storage**: Pluggable storage layer (S3-compatible, Walrus, or YouTube embeds)
 - **AI Integration**: Programmatic access for AI scouting agents
 
 ## 🚀 Features
@@ -36,6 +36,25 @@ contracts/
   flow/            # ScoutCredential.cdc ✅
 DEPLOYMENT.md      # Complete deployment guide ✅
 ```
+
+### Storage Provider Configuration
+
+The backend now supports three storage backends, selectable via the `STORAGE_PROVIDER` environment variable:
+
+1. `s3` (default) – Uses AWS S3 (or any S3-compatible service when `S3_ENDPOINT` is provided)
+2. `walrus` – Treats [Walrus](https://github.com/minio/minio#walrus) (or any other self-hosted S3-compatible service) the same as S3, but requires `S3_ENDPOINT` to point at your Walrus instance.
+3. `youtube` – Skips S3 entirely and streams directly from YouTube. In this mode videos are registered in the database with a `youtubeId` and no upload flow is required.
+
+Example `.env` (API):
+
+```env
+# Storage
+STORAGE_PROVIDER=youtube          # s3 | walrus | youtube
+# If using walrus (or any custom S3), point to the endpoint
+# S3_ENDPOINT=http://localhost:9000
+```
+
+---
 
 ## 🛠️ Development
 

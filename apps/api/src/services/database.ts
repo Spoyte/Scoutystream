@@ -14,6 +14,8 @@ export interface Video {
   player?: string
   thumbnail?: string
   status: 'uploading' | 'processing' | 'ready' | 'failed'
+  storageProvider?: 's3' | 'youtube' | 'walrus'
+  youtubeId?: string
   createdAt: number
   updatedAt: number
 }
@@ -148,6 +150,7 @@ class DatabaseService {
   createVideo(videoData: Omit<Video, 'id'>): Video {
     const video: Video = {
       id: this.nextVideoId++,
+      storageProvider: videoData.storageProvider || 's3',
       ...videoData,
     }
     

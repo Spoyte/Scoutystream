@@ -133,13 +133,28 @@ router.get('/:id/manifest', async (req: Request, res: Response) => {
       })
     }
 
-    // Generate pre-signed URL for HLS manifest
+    // If video is hosted on YouTube, return the embed URL directly
+    if (video.storageProvider === 'youtube') {
+      const youtubeId = video.youtubeId || video.filename
+      if (!youtubeId) {
+        return res.status(500).json({ error: 'YouTube video ID not set for this entry' })
+      }
+
+      return res.json({
+        manifestUrl: `https://www.youtube.com/embed/${youtubeId}`,
+        videoId,
+        provider: 'youtube'
+      })
+    }
+
+    // Generate pre-signed URL for HLS manifest (S3 or Walrus)
     const manifestUrl = await storageService.generateHlsManifestUrl(videoId.toString())
-    
+
     res.json({
       manifestUrl,
       videoId,
-      expiresIn: 300 // 5 minutes
+      expiresIn: 300, // 5 minutes
+      provider: video.storageProvider || 's3'
     })
   } catch (error) {
     console.error('Error getting video manifest:', error)

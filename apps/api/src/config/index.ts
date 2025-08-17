@@ -15,6 +15,11 @@ const configSchema = z.object({
   AWS_ACCESS_KEY_ID: z.string().optional(),
   AWS_SECRET_ACCESS_KEY: z.string().optional(),
   S3_BUCKET: z.string().optional(),
+
+  // Storage Provider
+  STORAGE_PROVIDER: z.enum(['s3', 'youtube', 'walrus']).default('s3'),
+  // Custom S3-compatible endpoint (used for Walrus or other providers)
+  S3_ENDPOINT: z.string().optional(),
   
   // Payment Configuration
   PAYMENT_PROVIDER: z.enum(['mock', 'x402']).default('mock'),

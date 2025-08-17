@@ -5,18 +5,30 @@ import { config } from '../config/index.js'
 class StorageService {
   private s3Client: S3Client | null = null
   private bucket: string
+  private provider: 's3' | 'youtube' | 'walrus'
 
   constructor() {
+    this.provider = (config.STORAGE_PROVIDER || 's3') as 's3' | 'youtube' | 'walrus'
+
     this.bucket = config.S3_BUCKET || 'scoutystream-dev'
-    
-    if (config.AWS_ACCESS_KEY_ID && config.AWS_SECRET_ACCESS_KEY) {
-      this.s3Client = new S3Client({
+
+    if (this.provider === 's3' || this.provider === 'walrus') {
+      // Configure S3-compatible client (AWS or Walrus)
+      const s3ClientConfig: any = {
         region: config.AWS_REGION,
-        credentials: {
+        credentials: config.AWS_ACCESS_KEY_ID && config.AWS_SECRET_ACCESS_KEY ? {
           accessKeyId: config.AWS_ACCESS_KEY_ID,
           secretAccessKey: config.AWS_SECRET_ACCESS_KEY,
-        },
-      })
+        } : undefined,
+      }
+
+      // Allow custom endpoint for Walrus (or any S3-compatible storage)
+      if (config.S3_ENDPOINT) {
+        s3ClientConfig.endpoint = config.S3_ENDPOINT
+        s3ClientConfig.forcePathStyle = true
+      }
+
+      this.s3Client = new S3Client(s3ClientConfig)
     }
   }
 
@@ -26,6 +38,11 @@ class StorageService {
     contentType: string,
     expiresIn: number = 3600
   ): Promise<string> {
+    if (this.provider !== 's3' && this.provider !== 'walrus') {
+      // Upload not supported for YouTube via this API
+      throw new Error('Upload via YouTube is not supported. Please upload directly on YouTube Studio and register the video separately.')
+    }
+
     if (!this.s3Client) {
       // Return a mock URL for development
       console.warn('⚠️  S3 not configured, returning mock upload URL')
@@ -80,8 +97,13 @@ class StorageService {
     }
   }
 
-  async generateHlsManifestUrl(videoId: string, expiresIn: number = 300): Promise<string> {
-    const manifestPath = `videos/hls/${videoId}/playlist.m3u8`
+  async generateHlsManifestUrl(videoKey: string, expiresIn: number = 300): Promise<string> {
+    if (this.provider === 'youtube') {
+      // For YouTube, treat videoKey as the YouTube video ID
+      return `https://www.youtube.com/embed/${videoKey}`
+    }
+
+    const manifestPath = `videos/hls/${videoKey}/playlist.m3u8`
     return this.generateDownloadUrl(manifestPath, expiresIn)
   }
 
@@ -103,6 +125,9 @@ class StorageService {
   }
 
   isConfigured(): boolean {
+    if (this.provider === 'youtube') {
+      return true
+    }
     return !!(this.s3Client && config.S3_BUCKET)
   }
 
@@ -110,6 +135,7 @@ class StorageService {
     return {
       bucket: this.bucket,
       region: config.AWS_REGION,
+      provider: this.provider,
       isConfigured: this.isConfigured()
     }
   }
