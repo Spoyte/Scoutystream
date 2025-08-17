@@ -10,7 +10,8 @@
     "dev": "pnpm --parallel --filter \"./apps/*\" dev",
     "build": "pnpm --filter \"./apps/*\" build",
     "lint": "pnpm --parallel --filter \"./apps/*\" lint",
-    "typecheck": "pnpm --parallel --filter \"./apps/*\" typecheck"
+    "typecheck": "pnpm --parallel --filter \"./apps/*\" typecheck",
+    "test": "echo 'No tests configured yet'"
   },
   "devDependencies": {
     "typescript": "^5.0.0"

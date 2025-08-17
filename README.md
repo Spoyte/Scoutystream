@@ -28,8 +28,8 @@ A decentralized application (dApp) for the professional sports industry that pro
 
 ```
 apps/
-  web/             # Next.js frontend (Vercel-ready)
-  api/             # Express backend (planned)
+  web/             # Next.js frontend (Vercel-ready) ✅
+  api/             # Express backend with 402 flow ✅
 contracts/
   chiliz/          # VideoAccessControl.sol (planned)
   flow/            # ScoutCredential.cdc (planned)
@@ -46,8 +46,12 @@ contracts/
 # Install dependencies
 pnpm install
 
-# Start development server
-pnpm --filter web dev
+# Start both frontend and backend
+pnpm dev
+
+# Or start individually:
+pnpm --filter api dev    # Backend on :4000
+pnpm --filter web dev    # Frontend on :3000
 ```
 
 ### Build
@@ -78,16 +82,19 @@ pnpm --filter web build
 
 ✅ **Completed**:
 - Frontend application with all pages and components
+- Backend API with video access control
 - Wallet integration (EVM + Flow)
 - Video gallery and playback UI
 - Agent demo interface
+- HTTP 402 payment flow (mock mode)
+- AI-friendly frame extraction endpoints
 - CI/CD with GitHub Actions
 - Vercel deployment ready
 
 🔄 **In Progress**:
-- Backend API development
 - Smart contract implementation
-- x402 payment integration
+- x402 payment integration (mock working)
+- Full stack integration testing
 
 📋 **Planned**:
 - Contract deployments
