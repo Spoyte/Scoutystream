@@ -10,11 +10,26 @@ const configSchema = z.object({
   CHILIZ_VIDEO_ACCESS_CONTROL_ADDRESS: z.string().optional(),
   CHILIZ_DEPLOYER_PRIVATE_KEY: z.string().optional(),
   
+  // Storage Configuration
+  STORAGE_PROVIDER: z.enum(['aws', 'youtube', 'walrus']).default('aws'),
+  
   // AWS Configuration
   AWS_REGION: z.string().default('us-east-1'),
   AWS_ACCESS_KEY_ID: z.string().optional(),
   AWS_SECRET_ACCESS_KEY: z.string().optional(),
   S3_BUCKET: z.string().optional(),
+  
+  // YouTube Configuration
+  YOUTUBE_CLIENT_ID: z.string().optional(),
+  YOUTUBE_CLIENT_SECRET: z.string().optional(),
+  YOUTUBE_REDIRECT_URI: z.string().optional(),
+  YOUTUBE_REFRESH_TOKEN: z.string().optional(),
+  YOUTUBE_CHANNEL_ID: z.string().optional(),
+  
+  // Walrus Configuration
+  WALRUS_PUBLISHER_URL: z.string().url().optional(),
+  WALRUS_AGGREGATOR_URL: z.string().url().optional(),
+  WALRUS_EPOCHS: z.number().default(5),
   
   // Payment Configuration
   PAYMENT_PROVIDER: z.enum(['mock', 'x402']).default('mock'),

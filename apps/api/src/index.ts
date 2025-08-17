@@ -6,6 +6,7 @@ import { videoRoutes } from './routes/videos.js'
 import { uploadRoutes } from './routes/uploads.js'
 import { paymentRoutes } from './routes/payments.js'
 import { healthRoutes } from './routes/health.js'
+import { storageRoutes } from './routes/storage.js'
 
 // Load environment variables
 dotenv.config()
@@ -27,6 +28,7 @@ app.use('/api/health', healthRoutes)
 app.use('/api/videos', videoRoutes)
 app.use('/api/uploads', uploadRoutes)
 app.use('/api/payments', paymentRoutes)
+app.use('/api/storage', storageRoutes)
 
 // Error handling middleware
 app.use((err: Error, req: express.Request, res: express.Response, next: express.NextFunction) => {

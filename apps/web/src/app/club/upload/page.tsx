@@ -1,6 +1,6 @@
 'use client'
 
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
 import { useRouter } from 'next/navigation'
 import api from '@/lib/api'
 
@@ -17,6 +17,21 @@ export default function UploadPage() {
   const [uploading, setUploading] = useState(false)
   const [uploadProgress, setUploadProgress] = useState(0)
   const [error, setError] = useState('')
+  const [storageInfo, setStorageInfo] = useState<any>(null)
+
+  useEffect(() => {
+    // Fetch storage provider information
+    const fetchStorageInfo = async () => {
+      try {
+        const response = await api.get('/storage/info')
+        setStorageInfo(response.data.storage)
+      } catch (error) {
+        console.error('Failed to fetch storage info:', error)
+      }
+    }
+    
+    fetchStorageInfo()
+  }, [])
 
   const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const selectedFile = e.target.files?.[0]
@@ -102,6 +117,61 @@ export default function UploadPage() {
         <h1 className="text-2xl font-bold text-gray-900 mb-6">
           Upload Training Session
         </h1>
+
+        {/* Storage Provider Info */}
+        {storageInfo && (
+          <div className="mb-6 p-4 bg-gray-50 rounded-lg border">
+            <div className="flex items-center justify-between">
+              <div className="flex items-center space-x-2">
+                <div className="flex items-center space-x-2">
+                  {storageInfo.provider === 'youtube' && (
+                    <div className="w-5 h-5 bg-red-600 rounded flex items-center justify-center">
+                      <span className="text-white text-xs font-bold">YT</span>
+                    </div>
+                  )}
+                  {storageInfo.provider === 'walrus' && (
+                    <div className="w-5 h-5 bg-blue-600 rounded flex items-center justify-center">
+                      <span className="text-white text-xs font-bold">W</span>
+                    </div>
+                  )}
+                  {storageInfo.provider === 'aws' && (
+                    <div className="w-5 h-5 bg-orange-500 rounded flex items-center justify-center">
+                      <span className="text-white text-xs font-bold">S3</span>
+                    </div>
+                  )}
+                  <span className="text-sm font-medium text-gray-700">
+                    Storage Provider: {storageInfo.name}
+                  </span>
+                </div>
+                <div className="flex items-center space-x-1">
+                  <div className={`w-2 h-2 rounded-full ${
+                    storageInfo.isConfigured ? 'bg-green-500' : 'bg-red-500'
+                  }`}></div>
+                  <span className={`text-xs ${
+                    storageInfo.isConfigured ? 'text-green-600' : 'text-red-600'
+                  }`}>
+                    {storageInfo.isConfigured ? 'Connected' : 'Not Configured'}
+                  </span>
+                </div>
+              </div>
+            </div>
+            {storageInfo.provider === 'youtube' && (
+              <p className="text-xs text-gray-500 mt-2">
+                Videos will be uploaded to YouTube. Ensure your account has proper permissions.
+              </p>
+            )}
+            {storageInfo.provider === 'walrus' && (
+              <p className="text-xs text-gray-500 mt-2">
+                Videos will be stored on the Walrus decentralized network (Sui blockchain).
+              </p>
+            )}
+            {storageInfo.provider === 'aws' && (
+              <p className="text-xs text-gray-500 mt-2">
+                Videos will be stored in AWS S3 with secure access controls.
+              </p>
+            )}
+          </div>
+        )}
 
         <form onSubmit={handleSubmit} className="space-y-6">
           <div>
