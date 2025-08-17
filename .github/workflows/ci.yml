@@ -1,0 +1,48 @@
+name: CI
+
+on:
+  push:
+    branches: [ main ]
+  pull_request:
+    branches: [ main ]
+
+jobs:
+  setup-build-test:
+    runs-on: ubuntu-latest
+    
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+        
+      - name: Setup pnpm
+        uses: pnpm/action-setup@v4
+        with:
+          version: 9
+          
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 20
+          cache: 'pnpm'
+          
+      - name: Install dependencies
+        run: pnpm install --frozen-lockfile
+        
+      - name: Lint web app
+        run: pnpm --filter web lint
+        
+      - name: Type check web app
+        run: pnpm --filter web typecheck
+        
+      - name: Build web app
+        run: pnpm --filter web build
+        
+      # Placeholder for API and contracts once implemented
+      - name: Type check API
+        run: pnpm --filter api typecheck || echo "API not yet implemented"
+        
+      - name: Build API
+        run: pnpm --filter api build || echo "API not yet implemented"
+        
+      - name: Compile contracts
+        run: pnpm --filter chiliz compile || echo "Contracts not yet implemented"
