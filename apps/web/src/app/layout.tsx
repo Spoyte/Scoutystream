@@ -43,6 +43,9 @@ export default function RootLayout({
                       <Link href="/profile" className="text-gray-900 hover:text-blue-600 px-3 py-2 text-sm font-medium">
                         Profile
                       </Link>
+                      <Link href="/infos" className="text-gray-900 hover:text-blue-600 px-3 py-2 text-sm font-medium">
+                        Project Info
+                      </Link>
                     </div>
                   </div>
                   <div className="flex items-center space-x-4">
