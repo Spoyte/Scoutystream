@@ -11,7 +11,8 @@
     "build": "pnpm --filter \"./apps/*\" build",
     "lint": "pnpm --parallel --filter \"./apps/*\" lint",
     "typecheck": "pnpm --parallel --filter \"./apps/*\" typecheck",
-    "test": "echo 'No tests configured yet'"
+    "test": "pnpm --filter chiliz-contracts test",
+    "compile": "pnpm --filter chiliz-contracts compile"
   },
   "devDependencies": {
     "typescript": "^5.0.0"

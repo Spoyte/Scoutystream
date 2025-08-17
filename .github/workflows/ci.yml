@@ -43,5 +43,8 @@ jobs:
       - name: Build API
         run: pnpm --filter api build
         
-      - name: Compile contracts
-        run: pnpm --filter chiliz compile || echo "Contracts not yet implemented"
+      - name: Compile Chiliz contracts
+        run: pnpm --filter chiliz-contracts compile
+        
+      - name: Test Chiliz contracts
+        run: pnpm --filter chiliz-contracts test

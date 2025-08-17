@@ -1,0 +1,36 @@
+{
+  "version": "1.0",
+  "networks": {
+    "testnet": {
+      "host": "access.devnet.nodes.onflow.org:9000",
+      "chain": "flow-testnet"
+    }
+  },
+  "accounts": {
+    "testnet-account": {
+      "address": "0x...",
+      "key": {
+        "type": "hex",
+        "index": 0,
+        "signatureAlgorithm": "ECDSA_P256",
+        "hashAlgorithm": "SHA3_256",
+        "privateKey": "$FLOW_PRIVATE_KEY"
+      }
+    }
+  },
+  "contracts": {
+    "ScoutCredential": {
+      "source": "./contracts/ScoutCredential.cdc",
+      "aliases": {
+        "testnet": "0x..."
+      }
+    }
+  },
+  "deployments": {
+    "testnet": {
+      "testnet-account": [
+        "ScoutCredential"
+      ]
+    }
+  }
+}

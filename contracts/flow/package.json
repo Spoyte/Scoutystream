@@ -1,0 +1,12 @@
+{
+  "name": "flow-contracts",
+  "version": "0.1.0",
+  "private": true,
+  "scripts": {
+    "deploy": "flow project deploy --network testnet",
+    "test": "echo 'Flow tests not implemented yet'"
+  },
+  "engines": {
+    "node": ">=18"
+  }
+}

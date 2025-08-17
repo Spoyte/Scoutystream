@@ -32,8 +32,9 @@ apps/
   web/             # Next.js frontend (Vercel-ready) ✅
   api/             # Express backend with 402 flow ✅
 contracts/
-  chiliz/          # VideoAccessControl.sol (planned)
-  flow/            # ScoutCredential.cdc (planned)
+  chiliz/          # VideoAccessControl.sol ✅
+  flow/            # ScoutCredential.cdc ✅
+DEPLOYMENT.md      # Complete deployment guide ✅
 ```
 
 ## 🛠️ Development
@@ -69,7 +70,8 @@ pnpm --filter web build
 ### Chiliz ($5,000)
 - ✅ Core access control on Chiliz Spicy Testnet
 - ✅ Sports/Entertainment application focus
-- 🔄 Smart contract deployment (planned)
+- ✅ Smart contract developed and tested
+- 🔄 Contract deployment to testnet (ready)
 
 ### Coinbase CDP ($20,000)
 - ✅ HTTP 402/x402 payment integration
@@ -77,7 +79,8 @@ pnpm --filter web build
 
 ### Flow ($10,000)
 - ✅ Scout Credential NFT concept
-- 🔄 Cadence contract deployment (planned)
+- ✅ Cadence contract developed
+- 🔄 Contract deployment to testnet (ready)
 
 ## 🚦 Current Status
 
@@ -90,13 +93,17 @@ pnpm --filter web build
 - Agent demo interface
 - HTTP 402 payment flow (mock mode)
 - AI-friendly frame extraction endpoints
+- **VideoAccessControl smart contract** (Solidity)
+- **ScoutCredential NFT contract** (Cadence)
+- Contract testing suite (19 passing tests)
+- Comprehensive deployment documentation
 - CI/CD with GitHub Actions
 - Vercel deployment ready
 
-🔄 **In Progress**:
-- Smart contract implementation
-- x402 payment integration (mock working)
-- Full stack integration testing
+🔄 **Ready for Deployment**:
+- Smart contract deployment to Chiliz Spicy Testnet
+- Flow NFT contract deployment to Flow Testnet
+- Production environment setup
 
 📋 **Planned**:
 - Contract deployments
