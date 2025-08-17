@@ -133,10 +133,20 @@ router.get('/:id/manifest', async (req: Request, res: Response) => {
       })
     }
 
-    // Generate pre-signed URL for HLS manifest
+    // Provider-specific manifest/stream info
+    if (video.provider === 'youtube' && video.youtubeId) {
+      return res.json({
+        provider: 'youtube',
+        youtubeId: video.youtubeId,
+        videoId,
+      })
+    }
+
+    // Generate pre-signed URL for HLS manifest (AWS or Walrus)
     const manifestUrl = await storageService.generateHlsManifestUrl(videoId.toString())
     
     res.json({
+      provider: storageService.getProvider(),
       manifestUrl,
       videoId,
       expiresIn: 300 // 5 minutes

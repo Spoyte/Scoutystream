@@ -13,6 +13,8 @@ export interface Video {
   team?: string
   player?: string
   thumbnail?: string
+  provider?: 'aws' | 'youtube' | 'walrus'
+  youtubeId?: string
   status: 'uploading' | 'processing' | 'ready' | 'failed'
   createdAt: number
   updatedAt: number

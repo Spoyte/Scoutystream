@@ -1,6 +1,6 @@
-'use client'
+"use client"
 
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
 import { useRouter } from 'next/navigation'
 import api from '@/lib/api'
 
@@ -17,16 +17,24 @@ export default function UploadPage() {
   const [uploading, setUploading] = useState(false)
   const [uploadProgress, setUploadProgress] = useState(0)
   const [error, setError] = useState('')
+  const [provider, setProvider] = useState<'aws' | 'youtube' | 'walrus'>('youtube')
+  const [youtubeUrl, setYoutubeUrl] = useState('')
+
+  useEffect(() => {
+    // fetch provider from health endpoint
+    api.get('/api/health').then(res => {
+      const p = res.data?.services?.storage?.provider
+      if (p === 'aws' || p === 'youtube' || p === 'walrus') setProvider(p)
+    }).catch(() => {})
+  }, [])
 
   const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const selectedFile = e.target.files?.[0]
     if (selectedFile) {
-      // Validate file type
       if (!selectedFile.type.startsWith('video/')) {
         setError('Please select a video file')
         return
       }
-      // Validate file size (max 500MB)
       if (selectedFile.size > 500 * 1024 * 1024) {
         setError('File size must be less than 500MB')
         return
@@ -38,15 +46,33 @@ export default function UploadPage() {
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
-    
-    if (!file || !title.trim()) {
-      setError('Please provide a file and title')
-      return
-    }
-
     try {
       setUploading(true)
       setError('')
+
+      if (provider === 'youtube') {
+        if (!title.trim() || !youtubeUrl.trim()) {
+          setError('Please provide a title and YouTube URL')
+          return
+        }
+        const { data } = await api.post('/api/uploads/commit', {
+          title: title.trim(),
+          description: description.trim(),
+          tags: tags.split(',').map(t => t.trim()).filter(Boolean),
+          sport: sport.trim(),
+          team: team.trim() || undefined,
+          player: player.trim() || undefined,
+          price: parseFloat(price),
+          youtubeUrl: youtubeUrl.trim(),
+        })
+        router.push(`/video/${data.video.id}`)
+        return
+      }
+
+      if (!file || !title.trim()) {
+        setError('Please provide a file and title')
+        return
+      }
 
       // Step 1: Request upload URL
       const { data: uploadData } = await api.post('/api/uploads/request', {
@@ -57,7 +83,7 @@ export default function UploadPage() {
 
       const { uploadUrl, videoId } = uploadData
 
-      // Step 2: Upload file directly to S3
+      // Step 2: Upload file directly to storage
       const uploadResponse = await fetch(uploadUrl, {
         method: 'PUT',
         body: file,
@@ -73,7 +99,7 @@ export default function UploadPage() {
       setUploadProgress(100)
 
       // Step 3: Commit upload and save metadata
-      await api.post('/api/uploads/commit', {
+      const { data: commitData } = await api.post('/api/uploads/commit', {
         videoId,
         title: title.trim(),
         description: description.trim(),
@@ -84,8 +110,7 @@ export default function UploadPage() {
         price: parseFloat(price)
       })
 
-      // Redirect to the new video
-      router.push(`/video/${videoId}`)
+      router.push(`/video/${commitData.video.id}`)
 
     } catch (err: any) {
       console.error('Upload error:', err)
@@ -100,38 +125,55 @@ export default function UploadPage() {
     <div className="max-w-2xl mx-auto">
       <div className="bg-white rounded-lg shadow-lg p-6">
         <h1 className="text-2xl font-bold text-gray-900 mb-6">
-          Upload Training Session
+          {provider === 'youtube' ? 'Add YouTube Training Session' : 'Upload Training Session'}
         </h1>
 
         <form onSubmit={handleSubmit} className="space-y-6">
-          <div>
-            <label className="block text-sm font-medium text-gray-700 mb-2">
-              Video File *
-            </label>
-            <div className="border-2 border-dashed border-gray-300 rounded-lg p-6 text-center hover:border-blue-400 transition-colors">
-              <input
-                type="file"
-                accept="video/*"
-                onChange={handleFileChange}
-                className="hidden"
-                id="video-upload"
-              />
-              <label
-                htmlFor="video-upload"
-                className="cursor-pointer flex flex-col items-center"
-              >
-                <svg className="h-12 w-12 text-gray-400 mb-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M7 16a4 4 0 01-.88-7.903A5 5 0 1115.9 6L16 6a5 5 0 011 9.9M15 13l-3-3m0 0l-3 3m3-3v12" />
-                </svg>
-                <span className="text-sm text-gray-600">
-                  {file ? file.name : 'Click to upload video file'}
-                </span>
-                <span className="text-xs text-gray-400 mt-1">
-                  MP4, MOV, AVI up to 500MB
-                </span>
+          {provider === 'youtube' ? (
+            <div>
+              <label htmlFor="youtubeUrl" className="block text-sm font-medium text-gray-700 mb-2">
+                YouTube URL *
               </label>
+              <input
+                type="url"
+                id="youtubeUrl"
+                value={youtubeUrl}
+                onChange={(e) => setYoutubeUrl(e.target.value)}
+                className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+                placeholder="https://www.youtube.com/watch?v=..."
+                required
+              />
             </div>
-          </div>
+          ) : (
+            <div>
+              <label className="block text-sm font-medium text-gray-700 mb-2">
+                Video File *
+              </label>
+              <div className="border-2 border-dashed border-gray-300 rounded-lg p-6 text-center hover:border-blue-400 transition-colors">
+                <input
+                  type="file"
+                  accept="video/*"
+                  onChange={handleFileChange}
+                  className="hidden"
+                  id="video-upload"
+                />
+                <label
+                  htmlFor="video-upload"
+                  className="cursor-pointer flex flex-col items-center"
+                >
+                  <svg className="h-12 w-12 text-gray-400 mb-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M7 16a4 4 0 01-.88-7.903A5 5 0 1115.9 6L16 6a5 5 0 011 9.9M15 13l-3-3m0 0l-3 3m3-3v12" />
+                  </svg>
+                  <span className="text-sm text-gray-600">
+                    {file ? file.name : 'Click to upload video file'}
+                  </span>
+                  <span className="text-xs text-gray-400 mt-1">
+                    MP4, MOV, AVI up to 500MB
+                  </span>
+                </label>
+              </div>
+            </div>
+          )}
 
           <div>
             <label htmlFor="title" className="block text-sm font-medium text-gray-700 mb-2">
@@ -247,7 +289,7 @@ export default function UploadPage() {
             </div>
           )}
 
-          {uploading && (
+          {uploading && provider !== 'youtube' && (
             <div className="p-4 bg-blue-100 border border-blue-300 rounded-lg">
               <p className="text-blue-700 mb-2">Uploading... {uploadProgress}%</p>
               <div className="w-full bg-blue-200 rounded-full h-2">
@@ -261,10 +303,10 @@ export default function UploadPage() {
 
           <button
             type="submit"
-            disabled={uploading || !file || !title.trim()}
+            disabled={uploading || (provider !== 'youtube' && !file) || !title.trim()}
             className="w-full bg-blue-600 hover:bg-blue-700 disabled:bg-gray-400 text-white py-3 px-4 rounded-md font-medium"
           >
-            {uploading ? 'Uploading...' : 'Upload Video'}
+            {uploading ? (provider === 'youtube' ? 'Saving...' : 'Uploading...') : (provider === 'youtube' ? 'Save Video' : 'Upload Video')}
           </button>
         </form>
       </div>

@@ -14,6 +14,13 @@ const uploadRequestSchema = z.object({
 
 router.post('/request', async (req: Request, res: Response) => {
   try {
+    if (storageService.getProvider() === 'youtube') {
+      return res.status(400).json({ 
+        error: 'unsupported',
+        message: 'YouTube provider does not support direct uploads. Use /commit with youtubeId or youtubeUrl.'
+      })
+    }
+
     const { filename, size, mimeType } = uploadRequestSchema.parse(req.body)
 
     // Validate file size (max 500MB)
@@ -36,10 +43,11 @@ router.post('/request', async (req: Request, res: Response) => {
       sport: 'other', // Default sport, will be updated during commit
       status: 'uploading',
       createdAt: Date.now(),
-      updatedAt: Date.now()
+      updatedAt: Date.now(),
+      provider: storageService.getProvider(),
     })
 
-    // Generate pre-signed upload URL
+    // Generate upload URL (AWS or Walrus)
     const uploadUrl = await storageService.generateUploadUrl(
       video.id.toString(),
       filename,
@@ -67,21 +75,89 @@ router.post('/request', async (req: Request, res: Response) => {
 
 // Commit upload and save metadata
 const uploadCommitSchema = z.object({
-  videoId: z.number().positive(),
+  videoId: z.number().positive().optional(),
   title: z.string().min(1).max(200),
   description: z.string().max(1000).optional(),
   tags: z.array(z.string()).max(10).optional(),
   sport: z.string().min(1).max(50),
   team: z.string().max(100).optional(),
   player: z.string().max(100).optional(),
-  price: z.number().min(0).max(1000).optional()
+  price: z.number().min(0).max(1000).optional(),
+  // YouTube specific
+  youtubeId: z.string().optional(),
+  youtubeUrl: z.string().url().optional(),
 })
+
+function extractYoutubeIdFromUrl(url: string): string | null {
+  try {
+    const u = new URL(url)
+    if (u.hostname.includes('youtu.be')) {
+      return u.pathname.slice(1) || null
+    }
+    if (u.searchParams.get('v')) {
+      return u.searchParams.get('v')
+    }
+    // Short embed or other formats
+    const parts = u.pathname.split('/').filter(Boolean)
+    const idx = parts.findIndex(p => p === 'embed' || p === 'shorts' || p === 'v')
+    if (idx >= 0 && parts[idx + 1]) return parts[idx + 1]
+  } catch {}
+  return null
+}
 
 router.post('/commit', async (req: Request, res: Response) => {
   try {
-    const { videoId, title, description, tags = [], sport, team, player, price = 5.99 } = uploadCommitSchema.parse(req.body)
+    const body = uploadCommitSchema.parse(req.body)
+    const provider = storageService.getProvider()
 
-    const video = db.getVideo(videoId)
+    if (provider === 'youtube') {
+      // Allow creating without prior /request
+      let youtubeId = body.youtubeId
+      if (!youtubeId && body.youtubeUrl) {
+        youtubeId = extractYoutubeIdFromUrl(body.youtubeUrl) || undefined
+      }
+      if (!youtubeId) {
+        return res.status(400).json({ error: 'YouTube ID or URL required' })
+      }
+
+      const video = body.videoId ? db.getVideo(body.videoId) : undefined
+      const now = Date.now()
+      const baseData = {
+        title: body.title,
+        description: body.description || '',
+        tags: body.tags || [],
+        sport: body.sport,
+        team: body.team,
+        player: body.player,
+        price: body.price ?? 5.99,
+        status: 'ready' as const,
+        createdAt: now,
+        updatedAt: now,
+        provider: 'youtube' as const,
+        youtubeId,
+        thumbnail: `https://img.youtube.com/vi/${youtubeId}/hqdefault.jpg`,
+      }
+
+      let saved
+      if (!video) {
+        saved = db.createVideo(baseData)
+      } else {
+        saved = db.updateVideo(video.id, baseData)!
+      }
+
+      return res.json({
+        success: true,
+        message: 'YouTube video saved successfully',
+        video: saved,
+      })
+    }
+
+    // Non-YouTube flow requires a valid existing videoId created at /request
+    if (!body.videoId) {
+      return res.status(400).json({ error: 'videoId is required for non-YouTube providers' })
+    }
+
+    const video = db.getVideo(body.videoId)
     if (!video) {
       return res.status(404).json({ error: 'Video not found' })
     }
@@ -94,14 +170,15 @@ router.post('/commit', async (req: Request, res: Response) => {
     }
 
     // Update video metadata
-    const updatedVideo = db.updateVideo(videoId, {
-      title,
-      description,
-      tags,
-      sport,
-      team,
-      player,
-      price,
+    const updatedVideo = db.updateVideo(body.videoId, {
+      title: body.title,
+      description: body.description,
+      tags: body.tags || [],
+      sport: body.sport,
+      team: body.team,
+      player: body.player,
+      price: body.price ?? 5.99,
+      provider,
       status: 'processing'
     })
 
@@ -110,29 +187,20 @@ router.post('/commit', async (req: Request, res: Response) => {
     }
 
     // Start background processing (HLS transcoding)
-    // For demo, we'll simulate this with a timeout
     setTimeout(async () => {
       try {
-        console.log(`🎬 Starting HLS transcoding for video ${videoId}`)
-        
-        // Simulate transcoding time (2-5 seconds for demo)
+        console.log(`🎬 Starting HLS transcoding for video ${body.videoId}`)
         const processingTime = 2000 + Math.random() * 3000
-        
         setTimeout(() => {
-          // Generate thumbnail URL for demo
-          const thumbnailUrl = storageService.generateThumbnailUrl(videoId.toString())
-          
-          db.updateVideo(videoId, {
+          db.updateVideo(body.videoId!, {
             status: 'ready',
-            thumbnail: `https://via.placeholder.com/320x180/4F46E5/FFFFFF?text=Video+${videoId}`
+            thumbnail: `https://via.placeholder.com/320x180/4F46E5/FFFFFF?text=Video+${body.videoId}`
           })
-          
-          console.log(`✅ Video ${videoId} processing complete`)
+          console.log(`✅ Video ${body.videoId} processing complete`)
         }, processingTime)
-        
       } catch (error) {
-        console.error(`❌ Processing failed for video ${videoId}:`, error)
-        db.updateVideo(videoId, { status: 'failed' })
+        console.error(`❌ Processing failed for video ${body.videoId}:`, error)
+        db.updateVideo(body.videoId!, { status: 'failed' })
       }
     }, 1000)
 

@@ -27,11 +27,19 @@ export default function AgentPage() {
       // Step 1: Attempt to get manifest (expect 402)
       console.log('Step 1: Requesting video manifest...')
       
-      let manifestUrl: string
+      let manifestUrl: string | undefined
+      let provider: 'aws' | 'walrus' | 'youtube' | undefined
+      let youtubeId: string | undefined
       try {
         const manifestResponse = await api.get(`/api/videos/${selectedVideoId}/manifest`)
-        manifestUrl = manifestResponse.data.manifestUrl
-        console.log('✅ Already have access, got manifest directly')
+        provider = manifestResponse.data.provider
+        if (provider === 'youtube') {
+          youtubeId = manifestResponse.data.youtubeId
+          console.log('✅ Already have access, YouTube provider')
+        } else {
+          manifestUrl = manifestResponse.data.manifestUrl
+          console.log('✅ Already have access, got manifest directly')
+        }
       } catch (err: any) {
         if (err.isPaymentRequired) {
           console.log('💰 Payment required, processing...')
@@ -43,8 +51,14 @@ export default function AgentPage() {
             
             // Step 3: Retry manifest request
             const manifestResponse = await api.get(`/api/videos/${selectedVideoId}/manifest`)
-            manifestUrl = manifestResponse.data.manifestUrl
-            console.log('✅ Got manifest after payment')
+            provider = manifestResponse.data.provider
+            if (provider === 'youtube') {
+              youtubeId = manifestResponse.data.youtubeId
+              console.log('✅ YouTube provider after payment')
+            } else {
+              manifestUrl = manifestResponse.data.manifestUrl
+              console.log('✅ Got manifest after payment')
+            }
           } catch (paymentErr: any) {
             throw new Error(`Payment failed: ${paymentErr.message}`)
           }
@@ -53,7 +67,7 @@ export default function AgentPage() {
         }
       }
 
-      // Step 4: Get frames for analysis
+      // Step 4: Get frames for analysis (mock)
       console.log('Step 2: Extracting frames for AI analysis...')
       
       try {
@@ -63,7 +77,7 @@ export default function AgentPage() {
         
         // For demo, we'll simulate having frames
         const mockFrames = [
-          'data:image/jpeg;base64,/9j/4AAQSkZJRgABAQAAAQ...', // Mock base64 images
+          'data:image/jpeg;base64,/9j/4AAQSkZJRgABAQAAAQ...',
           'data:image/jpeg;base64,/9j/4AAQSkZJRgABAQAAAQ...',
           'data:image/jpeg;base64,/9j/4AAQSkZJRgABAQAAAQ...'
         ]
@@ -72,7 +86,7 @@ export default function AgentPage() {
 
         // Step 5: Simulate AI analysis
         console.log('Step 3: Running AI analysis on frames...')
-        await new Promise(resolve => setTimeout(resolve, 2000)) // Simulate processing time
+        await new Promise(resolve => setTimeout(resolve, 2000))
 
         const mockAnalysis = {
           videoId: parseInt(selectedVideoId),

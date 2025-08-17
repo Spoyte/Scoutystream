@@ -3,6 +3,7 @@
 import { useParams } from 'next/navigation'
 import { useState, useEffect } from 'react'
 import { HlsPlayer } from '@/components/HlsPlayer'
+import { YoutubePlayer } from '@/components/YoutubePlayer'
 import { useVideo, useVideoManifest } from '@/hooks/useApi'
 import { useX402 } from '@/hooks/useX402'
 import { useAccount } from 'wagmi'
@@ -14,6 +15,7 @@ export default function VideoPage() {
   
   const [hasTriedAccess, setHasTriedAccess] = useState(false)
   const [manifestUrl, setManifestUrl] = useState<string>()
+  const [youtubeId, setYoutubeId] = useState<string>()
   
   const { video, isLoading: videoLoading, refresh: refreshVideo } = useVideo(videoId)
   const { 
@@ -43,8 +45,11 @@ export default function VideoPage() {
       handlePaymentRequired(manifestError, parseInt(videoId))
     } else if (fetchedManifestUrl) {
       setManifestUrl(fetchedManifestUrl)
+    } else if ((fetchedManifestUrl === undefined) && (manifestError === undefined) && video?.provider === 'youtube' && video?.youtubeId) {
+      // In YouTube mode, the manifest hook returns nothing; we can play via youtubeId
+      setYoutubeId(video.youtubeId)
     }
-  }, [manifestError, fetchedManifestUrl, videoId, handlePaymentRequired])
+  }, [manifestError, fetchedManifestUrl, videoId, handlePaymentRequired, video])
 
   if (videoLoading) {
     return (
@@ -65,16 +70,22 @@ export default function VideoPage() {
     )
   }
 
+  const canRenderPlayer = !!manifestUrl || !!youtubeId
+
   return (
     <div className="max-w-4xl mx-auto">
       <div className="bg-white rounded-lg shadow-lg overflow-hidden">
         <div className="aspect-video bg-gray-900">
-          {manifestUrl ? (
-            <HlsPlayer
-              manifestUrl={manifestUrl}
-              poster={video.thumbnail}
-              className="rounded-t-lg"
-            />
+          {canRenderPlayer ? (
+            youtubeId ? (
+              <YoutubePlayer youtubeId={youtubeId} />
+            ) : (
+              <HlsPlayer
+                manifestUrl={manifestUrl}
+                poster={video.thumbnail}
+                className="rounded-t-lg"
+              />
+            )
           ) : (
             <div className="flex items-center justify-center h-full">
               {video.hasAccess ? (
@@ -138,12 +149,6 @@ export default function VideoPage() {
               <span className="font-medium">Access:</span> {video.hasAccess ? '✅ Granted' : '🔒 Locked'}
             </div>
           </div>
-          
-          {paymentError && (
-            <div className="mt-4 p-4 bg-red-100 border border-red-300 rounded-lg">
-              <p className="text-red-700">Payment Error: {paymentError}</p>
-            </div>
-          )}
         </div>
       </div>
     </div>

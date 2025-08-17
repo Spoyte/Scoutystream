@@ -57,6 +57,8 @@ export function useVideoManifest(id: number | string, enabled = true) {
   
   return {
     manifestUrl: data?.manifestUrl,
+    provider: data?.provider,
+    youtubeId: data?.youtubeId,
     isLoading,
     isError: error,
     refresh: mutate
