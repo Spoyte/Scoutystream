@@ -9,6 +9,9 @@ export interface Video {
   duration?: number
   price: number
   tags: string[]
+  sport: string
+  team?: string
+  player?: string
   thumbnail?: string
   status: 'uploading' | 'processing' | 'ready' | 'failed'
   createdAt: number
@@ -40,6 +43,8 @@ class DatabaseService {
         duration: 1800, // 30 minutes
         price: 5.99,
         tags: ["youth", "ball-control", "training", "fundamentals"],
+        sport: "football",
+        team: "Barcelona Youth Academy",
         status: "ready",
         createdAt: Date.now() - 86400000, // 1 day ago
         updatedAt: Date.now() - 86400000,
@@ -50,6 +55,8 @@ class DatabaseService {
         duration: 5400, // 90 minutes
         price: 12.99,
         tags: ["professional", "tactics", "scrimmage", "analysis"],
+        sport: "football",
+        team: "Manchester United",
         status: "ready",
         createdAt: Date.now() - 172800000, // 2 days ago
         updatedAt: Date.now() - 172800000,
@@ -60,9 +67,73 @@ class DatabaseService {
         duration: 2700, // 45 minutes
         price: 8.99,
         tags: ["individual", "dribbling", "skills", "advanced"],
+        sport: "football",
+        player: "Marcus Rashford",
+        team: "Manchester United",
         status: "ready",
         createdAt: Date.now() - 259200000, // 3 days ago
         updatedAt: Date.now() - 259200000,
+      },
+      {
+        title: "Basketball Shooting Drills - 3-Point Training",
+        description: "Intensive 3-point shooting session with NBA-level techniques and form analysis.",
+        duration: 2100, // 35 minutes
+        price: 7.99,
+        tags: ["shooting", "3-point", "technique", "professional"],
+        sport: "basketball",
+        team: "Los Angeles Lakers",
+        player: "LeBron James",
+        status: "ready",
+        createdAt: Date.now() - 345600000, // 4 days ago
+        updatedAt: Date.now() - 345600000,
+      },
+      {
+        title: "Tennis Serve Masterclass",
+        description: "Professional tennis serving techniques with slow-motion analysis and footwork breakdown.",
+        duration: 3600, // 60 minutes
+        price: 15.99,
+        tags: ["serve", "technique", "professional", "masterclass"],
+        sport: "tennis",
+        player: "Novak Djokovic",
+        status: "ready",
+        createdAt: Date.now() - 432000000, // 5 days ago
+        updatedAt: Date.now() - 432000000,
+      },
+      {
+        title: "Football Defense Strategies - Premier League",
+        description: "Defensive positioning and tactics used in Premier League matches.",
+        duration: 4500, // 75 minutes
+        price: 11.99,
+        tags: ["defense", "tactics", "premier-league", "professional"],
+        sport: "football",
+        team: "Liverpool FC",
+        status: "ready",
+        createdAt: Date.now() - 518400000, // 6 days ago
+        updatedAt: Date.now() - 518400000,
+      },
+      {
+        title: "Basketball Fast Break Offense",
+        description: "High-speed offensive plays and transition basketball strategies.",
+        duration: 1950, // 32.5 minutes
+        price: 6.99,
+        tags: ["offense", "fast-break", "transition", "strategy"],
+        sport: "basketball",
+        team: "Golden State Warriors",
+        status: "ready",
+        createdAt: Date.now() - 604800000, // 7 days ago
+        updatedAt: Date.now() - 604800000,
+      },
+      {
+        title: "Tennis Backhand Technique - Clay Court",
+        description: "Advanced backhand techniques specifically for clay court play.",
+        duration: 2400, // 40 minutes
+        price: 9.99,
+        tags: ["backhand", "clay-court", "technique", "advanced"],
+        sport: "tennis",
+        player: "Rafael Nadal",
+        status: "ready",
+        createdAt: Date.now() - 691200000, // 8 days ago
+        updatedAt: Date.now() - 691200000,
       }
     ]
 
@@ -89,8 +160,46 @@ class DatabaseService {
     return this.videos.get(id)
   }
 
-  getAllVideos(): Video[] {
-    return Array.from(this.videos.values()).sort((a, b) => b.createdAt - a.createdAt)
+  getAllVideos(filters?: {
+    sport?: string
+    team?: string
+    player?: string
+    search?: string
+  }): Video[] {
+    let videos = Array.from(this.videos.values())
+
+    if (filters) {
+      if (filters.sport) {
+        videos = videos.filter(video => 
+          video.sport.toLowerCase() === filters.sport!.toLowerCase()
+        )
+      }
+
+      if (filters.team) {
+        videos = videos.filter(video => 
+          video.team?.toLowerCase().includes(filters.team!.toLowerCase())
+        )
+      }
+
+      if (filters.player) {
+        videos = videos.filter(video => 
+          video.player?.toLowerCase().includes(filters.player!.toLowerCase())
+        )
+      }
+
+      if (filters.search) {
+        const searchTerm = filters.search.toLowerCase()
+        videos = videos.filter(video => 
+          video.title.toLowerCase().includes(searchTerm) ||
+          video.description?.toLowerCase().includes(searchTerm) ||
+          video.tags.some(tag => tag.toLowerCase().includes(searchTerm)) ||
+          video.team?.toLowerCase().includes(searchTerm) ||
+          video.player?.toLowerCase().includes(searchTerm)
+        )
+      }
+    }
+
+    return videos.sort((a, b) => b.createdAt - a.createdAt)
   }
 
   updateVideo(id: number, updates: Partial<Video>): Video | undefined {
@@ -166,6 +275,55 @@ class DatabaseService {
     return this.accessRecords.filter(record => record.videoId === videoId)
   }
 
+  // Filter options
+  getAvailableSports(): string[] {
+    const sports = new Set<string>()
+    Array.from(this.videos.values()).forEach(video => {
+      if (video.sport) {
+        sports.add(video.sport)
+      }
+    })
+    return Array.from(sports).sort()
+  }
+
+  getAvailableTeams(sport?: string): string[] {
+    const teams = new Set<string>()
+    let videos = Array.from(this.videos.values())
+    
+    if (sport) {
+      videos = videos.filter(video => video.sport.toLowerCase() === sport.toLowerCase())
+    }
+    
+    videos.forEach(video => {
+      if (video.team) {
+        teams.add(video.team)
+      }
+    })
+    return Array.from(teams).sort()
+  }
+
+  getAvailablePlayers(sport?: string, team?: string): string[] {
+    const players = new Set<string>()
+    let videos = Array.from(this.videos.values())
+    
+    if (sport) {
+      videos = videos.filter(video => video.sport.toLowerCase() === sport.toLowerCase())
+    }
+    
+    if (team) {
+      videos = videos.filter(video => 
+        video.team?.toLowerCase().includes(team.toLowerCase())
+      )
+    }
+    
+    videos.forEach(video => {
+      if (video.player) {
+        players.add(video.player)
+      }
+    })
+    return Array.from(players).sort()
+  }
+
   // Statistics
   getStats() {
     return {
@@ -176,7 +334,11 @@ class DatabaseService {
         processing: Array.from(this.videos.values()).filter(v => v.status === 'processing').length,
         uploading: Array.from(this.videos.values()).filter(v => v.status === 'uploading').length,
         failed: Array.from(this.videos.values()).filter(v => v.status === 'failed').length,
-      }
+      },
+      videosBySport: this.getAvailableSports().reduce((acc, sport) => {
+        acc[sport] = this.getAllVideos({ sport }).length
+        return acc
+      }, {} as Record<string, number>)
     }
   }
 }

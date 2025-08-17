@@ -7,10 +7,26 @@ import { paymentService } from '../services/payments.js'
 
 const router: IRouter = Router()
 
-// Get all videos (public metadata)
+// Get all videos (public metadata) with filtering
 router.get('/', async (req: Request, res: Response) => {
   try {
-    const videos = db.getAllVideos()
+    const { sport, team, player, search } = req.query
+    
+    const filters = {
+      sport: sport as string,
+      team: team as string,
+      player: player as string,
+      search: search as string
+    }
+
+    // Remove undefined filters
+    Object.keys(filters).forEach(key => {
+      if (!filters[key as keyof typeof filters]) {
+        delete filters[key as keyof typeof filters]
+      }
+    })
+
+    const videos = db.getAllVideos(Object.keys(filters).length > 0 ? filters : undefined)
     
     // Return public metadata only
     const publicVideos = videos.map(video => ({
@@ -20,6 +36,9 @@ router.get('/', async (req: Request, res: Response) => {
       duration: video.duration,
       price: video.price,
       tags: video.tags,
+      sport: video.sport,
+      team: video.team,
+      player: video.player,
       thumbnail: video.thumbnail,
       status: video.status,
       createdAt: video.createdAt
@@ -262,6 +281,39 @@ router.post('/:id/purchase', async (req: Request, res: Response) => {
   } catch (error) {
     console.error('Error processing purchase:', error)
     res.status(500).json({ error: 'Purchase failed' })
+  }
+})
+
+// Get available filter options
+router.get('/filters/sports', async (req: Request, res: Response) => {
+  try {
+    const sports = db.getAvailableSports()
+    res.json(sports)
+  } catch (error) {
+    console.error('Error fetching sports:', error)
+    res.status(500).json({ error: 'Failed to fetch sports' })
+  }
+})
+
+router.get('/filters/teams', async (req: Request, res: Response) => {
+  try {
+    const { sport } = req.query
+    const teams = db.getAvailableTeams(sport as string)
+    res.json(teams)
+  } catch (error) {
+    console.error('Error fetching teams:', error)
+    res.status(500).json({ error: 'Failed to fetch teams' })
+  }
+})
+
+router.get('/filters/players', async (req: Request, res: Response) => {
+  try {
+    const { sport, team } = req.query
+    const players = db.getAvailablePlayers(sport as string, team as string)
+    res.json(players)
+  } catch (error) {
+    console.error('Error fetching players:', error)
+    res.status(500).json({ error: 'Failed to fetch players' })
   }
 })
 

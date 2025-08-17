@@ -9,6 +9,9 @@ interface Video {
   price?: number
   duration?: number
   tags?: string[]
+  sport: string
+  team?: string
+  player?: string
   hasAccess?: boolean
 }
 

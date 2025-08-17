@@ -10,6 +10,9 @@ export default function UploadPage() {
   const [title, setTitle] = useState('')
   const [description, setDescription] = useState('')
   const [tags, setTags] = useState('')
+  const [sport, setSport] = useState('football')
+  const [team, setTeam] = useState('')
+  const [player, setPlayer] = useState('')
   const [price, setPrice] = useState('5.00')
   const [uploading, setUploading] = useState(false)
   const [uploadProgress, setUploadProgress] = useState(0)
@@ -75,6 +78,9 @@ export default function UploadPage() {
         title: title.trim(),
         description: description.trim(),
         tags: tags.split(',').map(tag => tag.trim()).filter(Boolean),
+        sport: sport.trim(),
+        team: team.trim() || undefined,
+        player: player.trim() || undefined,
         price: parseFloat(price)
       })
 
@@ -157,6 +163,56 @@ export default function UploadPage() {
           </div>
 
           <div>
+            <label htmlFor="sport" className="block text-sm font-medium text-gray-700 mb-2">
+              Sport *
+            </label>
+            <select
+              id="sport"
+              value={sport}
+              onChange={(e) => setSport(e.target.value)}
+              className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+              required
+            >
+              <option value="football">Football</option>
+              <option value="basketball">Basketball</option>
+              <option value="tennis">Tennis</option>
+              <option value="soccer">Soccer</option>
+              <option value="baseball">Baseball</option>
+              <option value="volleyball">Volleyball</option>
+              <option value="hockey">Hockey</option>
+              <option value="other">Other</option>
+            </select>
+          </div>
+
+          <div>
+            <label htmlFor="team" className="block text-sm font-medium text-gray-700 mb-2">
+              Team/Club
+            </label>
+            <input
+              type="text"
+              id="team"
+              value={team}
+              onChange={(e) => setTeam(e.target.value)}
+              className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+              placeholder="e.g., Manchester United, Lakers, etc."
+            />
+          </div>
+
+          <div>
+            <label htmlFor="player" className="block text-sm font-medium text-gray-700 mb-2">
+              Featured Player
+            </label>
+            <input
+              type="text"
+              id="player"
+              value={player}
+              onChange={(e) => setPlayer(e.target.value)}
+              className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+              placeholder="e.g., Marcus Rashford, LeBron James, etc."
+            />
+          </div>
+
+          <div>
             <label htmlFor="tags" className="block text-sm font-medium text-gray-700 mb-2">
               Tags
             </label>
@@ -166,7 +222,7 @@ export default function UploadPage() {
               value={tags}
               onChange={(e) => setTags(e.target.value)}
               className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
-              placeholder="football, defense, youth (comma separated)"
+              placeholder="training, defense, youth (comma separated)"
             />
           </div>
 

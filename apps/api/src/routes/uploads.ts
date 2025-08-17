@@ -33,6 +33,7 @@ router.post('/request', async (req: Request, res: Response) => {
       filename,
       price: 5.99, // Default price
       tags: [],
+      sport: 'other', // Default sport, will be updated during commit
       status: 'uploading',
       createdAt: Date.now(),
       updatedAt: Date.now()
@@ -70,12 +71,15 @@ const uploadCommitSchema = z.object({
   title: z.string().min(1).max(200),
   description: z.string().max(1000).optional(),
   tags: z.array(z.string()).max(10).optional(),
+  sport: z.string().min(1).max(50),
+  team: z.string().max(100).optional(),
+  player: z.string().max(100).optional(),
   price: z.number().min(0).max(1000).optional()
 })
 
 router.post('/commit', async (req: Request, res: Response) => {
   try {
-    const { videoId, title, description, tags = [], price = 5.99 } = uploadCommitSchema.parse(req.body)
+    const { videoId, title, description, tags = [], sport, team, player, price = 5.99 } = uploadCommitSchema.parse(req.body)
 
     const video = db.getVideo(videoId)
     if (!video) {
@@ -94,6 +98,9 @@ router.post('/commit', async (req: Request, res: Response) => {
       title,
       description,
       tags,
+      sport,
+      team,
+      player,
       price,
       status: 'processing'
     })

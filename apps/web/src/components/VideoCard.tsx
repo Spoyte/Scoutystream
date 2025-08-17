@@ -10,6 +10,9 @@ interface VideoCardProps {
   price?: number
   duration?: number
   tags?: string[]
+  sport: string
+  team?: string
+  player?: string
   hasAccess?: boolean
 }
 
@@ -20,6 +23,9 @@ export function VideoCard({
   price, 
   duration, 
   tags = [], 
+  sport,
+  team,
+  player,
   hasAccess = false 
 }: VideoCardProps) {
   const formatDuration = (seconds: number) => {
@@ -59,9 +65,26 @@ export function VideoCard({
         </div>
         
         <div className="p-4">
+          <div className="flex items-center gap-2 mb-2">
+            <span className="bg-blue-100 text-blue-800 text-xs px-2 py-1 rounded-full font-medium">
+              {sport}
+            </span>
+            {team && (
+              <span className="bg-purple-100 text-purple-800 text-xs px-2 py-1 rounded-full">
+                {team}
+              </span>
+            )}
+          </div>
+          
           <h3 className="font-semibold text-lg mb-2 group-hover:text-blue-600">
             {title}
           </h3>
+          
+          {player && (
+            <div className="text-sm text-gray-600 mb-2">
+              <span className="font-medium">Player:</span> {player}
+            </div>
+          )}
           
           {tags.length > 0 && (
             <div className="flex flex-wrap gap-1 mb-2">

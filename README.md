@@ -15,6 +15,7 @@ A decentralized application (dApp) for the professional sports industry that pro
 ### For Scouts & AI Agents
 - **Pay-per-view access** to training videos using HTTP 402
 - **HLS video streaming** with blockchain-verified access
+- **Advanced filtering** by sport, team, player, and search terms
 - **AI-friendly API** for programmatic analysis
 - **Frame extraction** for computer vision analysis
 - **Scout Credential NFTs** on Flow blockchain
