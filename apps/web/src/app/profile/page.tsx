@@ -1,8 +1,10 @@
 'use client'
 
 import { useState, useEffect } from 'react'
+import Image from 'next/image'
 import { currentUser } from '@/lib/fcl'
 import * as fcl from '@/lib/fcl'
+import { getMockUser, generateMockUserProfile, mockUsers } from '@/lib/mockData'
 
 interface FlowUser {
   addr?: string
@@ -13,6 +15,9 @@ export default function ProfilePage() {
   const [user, setUser] = useState<FlowUser>({ loggedIn: false })
   const [isMinting, setIsMinting] = useState(false)
   const [mintResult, setMintResult] = useState<{ txId?: string; error?: string }>({})
+  
+  // Mock user profile - in a real app, this would be fetched based on the connected wallet
+  const mockProfile = user.loggedIn ? getMockUser("user_1") || generateMockUserProfile() : null
 
   useEffect(() => {
     const unsubscribe = currentUser.subscribe(setUser)
@@ -88,13 +93,87 @@ export default function ProfilePage() {
   }
 
   return (
-    <div className="max-w-2xl mx-auto">
-      <div className="bg-white rounded-lg shadow-lg p-6">
-        <h1 className="text-2xl font-bold text-gray-900 mb-6">
-          Scout Profile
-        </h1>
+    <div className="max-w-4xl mx-auto">
+      <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
+        {/* Profile Sidebar */}
+        <div className="lg:col-span-1">
+          <div className="bg-white rounded-lg shadow-lg p-6">
+            <div className="text-center">
+              {mockProfile && (
+                <>
+                  <div className="relative w-24 h-24 mx-auto mb-4">
+                    <Image
+                      src={mockProfile.avatar}
+                      alt={mockProfile.name}
+                      fill
+                      className="rounded-full object-cover"
+                    />
+                  </div>
+                  <h2 className="text-xl font-bold text-gray-900 mb-1">
+                    {mockProfile.name}
+                  </h2>
+                  <p className="text-gray-600 text-sm mb-2">
+                    {mockProfile.email}
+                  </p>
+                  <p className="text-gray-500 text-xs">
+                    Joined {new Date(mockProfile.joinDate).toLocaleDateString()}
+                  </p>
+                  
+                  <div className="mt-4 pt-4 border-t border-gray-200">
+                    <div className="grid grid-cols-2 gap-4 text-center">
+                      <div>
+                        <p className="text-2xl font-bold text-blue-600">
+                          {mockProfile.purchasedVideos.length}
+                        </p>
+                        <p className="text-xs text-gray-500">Videos Owned</p>
+                      </div>
+                      <div>
+                        <p className="text-2xl font-bold text-green-600">
+                          {mockProfile.favoriteTeams.length}
+                        </p>
+                        <p className="text-xs text-gray-500">Favorite Teams</p>
+                      </div>
+                    </div>
+                  </div>
 
-        <div className="space-y-6">
+                  {mockProfile.favoriteSports.length > 0 && (
+                    <div className="mt-4">
+                      <h3 className="text-sm font-medium text-gray-700 mb-2">Favorite Sports</h3>
+                      <div className="flex flex-wrap gap-1">
+                        {mockProfile.favoriteSports.map((sport, index) => (
+                          <span
+                            key={index}
+                            className="bg-blue-100 text-blue-800 text-xs px-2 py-1 rounded-full"
+                          >
+                            {sport}
+                          </span>
+                        ))}
+                      </div>
+                    </div>
+                  )}
+                </>
+              )}
+              
+              {!user.loggedIn && (
+                <div className="text-center">
+                  <div className="w-24 h-24 mx-auto mb-4 bg-gray-200 rounded-full flex items-center justify-center">
+                    <span className="text-gray-400 text-2xl">👤</span>
+                  </div>
+                  <p className="text-gray-500">Connect wallet to view profile</p>
+                </div>
+              )}
+            </div>
+          </div>
+        </div>
+
+        {/* Main Content */}
+        <div className="lg:col-span-2">
+          <div className="bg-white rounded-lg shadow-lg p-6">
+            <h1 className="text-2xl font-bold text-gray-900 mb-6">
+              Scout Profile
+            </h1>
+
+            <div className="space-y-6">
           {/* Flow Wallet Section */}
           <div className="border-b pb-6">
             <h2 className="text-lg font-semibold text-gray-800 mb-4">
@@ -185,6 +264,7 @@ export default function ProfilePage() {
               <li>• Can be used across the ScoutyStream ecosystem</li>
               <li>• Demonstrates commitment to transparent scouting</li>
             </ul>
+            </div>
           </div>
         </div>
       </div>

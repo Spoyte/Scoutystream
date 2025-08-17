@@ -2,6 +2,7 @@
 
 import Link from 'next/link'
 import Image from 'next/image'
+import { getSportIcon, getTeamLogo } from '@/lib/mockData'
 
 interface VideoCardProps {
   id: number
@@ -33,6 +34,9 @@ export function VideoCard({
     const secs = seconds % 60
     return `${mins}:${secs.toString().padStart(2, '0')}`
   }
+
+  const sportIcon = getSportIcon(sport)
+  const teamLogo = team ? getTeamLogo(team) : null
 
   return (
     <Link href={`/video/${id}`} className="block group">
@@ -66,11 +70,32 @@ export function VideoCard({
         
         <div className="p-4">
           <div className="flex items-center gap-2 mb-2">
-            <span className="bg-blue-100 text-blue-800 text-xs px-2 py-1 rounded-full font-medium">
-              {sport}
+            <span 
+              className="text-xs px-2 py-1 rounded-full font-medium flex items-center gap-1"
+              style={{ 
+                backgroundColor: sportIcon?.color + '20',
+                color: sportIcon?.color 
+              }}
+            >
+              {sportIcon?.icon} {sport}
             </span>
             {team && (
-              <span className="bg-purple-100 text-purple-800 text-xs px-2 py-1 rounded-full">
+              <span 
+                className="text-xs px-2 py-1 rounded-full flex items-center gap-1"
+                style={{
+                  backgroundColor: teamLogo?.primaryColor + '20',
+                  color: teamLogo?.primaryColor
+                }}
+              >
+                {teamLogo && (
+                  <Image
+                    src={teamLogo.logo}
+                    alt={team}
+                    width={12}
+                    height={12}
+                    className="rounded-full"
+                  />
+                )}
                 {team}
               </span>
             )}
