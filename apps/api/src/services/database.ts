@@ -45,6 +45,7 @@ class DatabaseService {
         tags: ["youth", "ball-control", "training", "fundamentals"],
         sport: "football",
         team: "Barcelona Youth Academy",
+        thumbnail: "https://images.unsplash.com/photo-1517927033932-b3d18e61fb3a?auto=format&fit=crop&w=1200&q=80",
         status: "ready",
         createdAt: Date.now() - 86400000, // 1 day ago
         updatedAt: Date.now() - 86400000,
@@ -57,6 +58,7 @@ class DatabaseService {
         tags: ["professional", "tactics", "scrimmage", "analysis"],
         sport: "football",
         team: "Manchester United",
+        thumbnail: "https://images.unsplash.com/photo-1461896836934-ffe607ba8211?auto=format&fit=crop&w=1200&q=80",
         status: "ready",
         createdAt: Date.now() - 172800000, // 2 days ago
         updatedAt: Date.now() - 172800000,
@@ -70,6 +72,7 @@ class DatabaseService {
         sport: "football",
         player: "Marcus Rashford",
         team: "Manchester United",
+        thumbnail: "https://images.unsplash.com/photo-1518091043644-c1d4457512c6?auto=format&fit=crop&w=1200&q=80",
         status: "ready",
         createdAt: Date.now() - 259200000, // 3 days ago
         updatedAt: Date.now() - 259200000,
@@ -83,6 +86,7 @@ class DatabaseService {
         sport: "basketball",
         team: "Los Angeles Lakers",
         player: "LeBron James",
+        thumbnail: "https://images.unsplash.com/photo-1517649763962-0c623066013b?auto=format&fit=crop&w=1200&q=80",
         status: "ready",
         createdAt: Date.now() - 345600000, // 4 days ago
         updatedAt: Date.now() - 345600000,
@@ -95,6 +99,7 @@ class DatabaseService {
         tags: ["serve", "technique", "professional", "masterclass"],
         sport: "tennis",
         player: "Novak Djokovic",
+        thumbnail: "https://images.unsplash.com/photo-1517646560600-942c3f383a57?auto=format&fit=crop&w=1200&q=80",
         status: "ready",
         createdAt: Date.now() - 432000000, // 5 days ago
         updatedAt: Date.now() - 432000000,
@@ -107,6 +112,7 @@ class DatabaseService {
         tags: ["defense", "tactics", "premier-league", "professional"],
         sport: "football",
         team: "Liverpool FC",
+        thumbnail: "https://images.unsplash.com/photo-1508098682722-e99c43a406b2?auto=format&fit=crop&w=1200&q=80",
         status: "ready",
         createdAt: Date.now() - 518400000, // 6 days ago
         updatedAt: Date.now() - 518400000,
@@ -119,6 +125,7 @@ class DatabaseService {
         tags: ["offense", "fast-break", "transition", "strategy"],
         sport: "basketball",
         team: "Golden State Warriors",
+        thumbnail: "https://images.unsplash.com/photo-1518066000714-58dbb57eba1e?auto=format&fit=crop&w=1200&q=80",
         status: "ready",
         createdAt: Date.now() - 604800000, // 7 days ago
         updatedAt: Date.now() - 604800000,
@@ -131,9 +138,62 @@ class DatabaseService {
         tags: ["backhand", "clay-court", "technique", "advanced"],
         sport: "tennis",
         player: "Rafael Nadal",
+        thumbnail: "https://images.unsplash.com/photo-1504270997636-07ddfbd48945?auto=format&fit=crop&w=1200&q=80",
         status: "ready",
         createdAt: Date.now() - 691200000, // 8 days ago
         updatedAt: Date.now() - 691200000,
+      },
+      {
+        title: "Goalkeeper Training - Shot Stopping",
+        description: "Reflex drills and positioning for effective shot stopping.",
+        duration: 1800, // 30 minutes
+        price: 7.49,
+        tags: ["goalkeeper", "reflex", "positioning", "training"],
+        sport: "football",
+        team: "Juventus Academy",
+        thumbnail: "https://images.unsplash.com/photo-1486286701208-1d58e9338013?auto=format&fit=crop&w=1200&q=80",
+        status: "ready",
+        createdAt: Date.now() - 777600000, // 9 days ago
+        updatedAt: Date.now() - 777600000,
+      },
+      {
+        title: "Basketball Defense Footwork",
+        description: "Lateral quickness and stance drills to improve on-ball defense.",
+        duration: 2000, // ~33 minutes
+        price: 5.49,
+        tags: ["defense", "footwork", "lateral", "drills"],
+        sport: "basketball",
+        team: "Boston Celtics",
+        thumbnail: "https://images.unsplash.com/photo-1546519638-68e109498ffc?auto=format&fit=crop&w=1200&q=80",
+        status: "ready",
+        createdAt: Date.now() - 864000000, // 10 days ago
+        updatedAt: Date.now() - 864000000,
+      },
+      {
+        title: "Tennis Footwork Drills - Baseline Movement",
+        description: "Improve court coverage with baseline-specific footwork sequences.",
+        duration: 2100, // 35 minutes
+        price: 6.99,
+        tags: ["footwork", "baseline", "movement", "agility"],
+        sport: "tennis",
+        player: "Iga Świątek",
+        thumbnail: "https://images.unsplash.com/photo-1531415074968-036ba1b575da?auto=format&fit=crop&w=1200&q=80",
+        status: "ready",
+        createdAt: Date.now() - 950400000, // 11 days ago
+        updatedAt: Date.now() - 950400000,
+      },
+      {
+        title: "Football Set Pieces - Corners and Free Kicks",
+        description: "Designing set-piece routines and delivery techniques.",
+        duration: 2700, // 45 minutes
+        price: 10.99,
+        tags: ["set-pieces", "corners", "free-kicks", "delivery"],
+        sport: "football",
+        team: "Real Madrid",
+        thumbnail: "https://images.unsplash.com/photo-1522778526097-ce0a22ceb253?auto=format&fit=crop&w=1200&q=80",
+        status: "ready",
+        createdAt: Date.now() - 1036800000, // 12 days ago
+        updatedAt: Date.now() - 1036800000,
       }
     ]
 
